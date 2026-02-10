@@ -1,3 +1,6 @@
+import rdkit
+st.write("RDKit version:", rdkit.__version__)
+
 import streamlit as st
 import pandas as pd
 from PIL import Image
@@ -10,8 +13,7 @@ from rdkit.Chem import AllChem
 import pandas as pd
 import numpy as np
 
-import rdkit
-st.write("RDKit version:", rdkit.__version__)
+
 
 # Molecular descriptor calculator
 def desc_calc():
