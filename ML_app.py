@@ -5,14 +5,43 @@ import subprocess
 import os
 import base64
 import pickle
+from rdkit import Chem
+from rdkit.Chem import AllChem
+import pandas as pd
+import numpy as np
 
 # Molecular descriptor calculator
 def desc_calc():
-    # Performs the descriptor calculation
-    bashCommand = "java -Xms2G -Xmx2G -Djava.awt.headless=true -jar ./PaDEL-Descriptor/PaDEL-Descriptor.jar -removesalt -standardizenitro -fingerprints -descriptortypes ./PaDEL-Descriptor/PubchemFingerprinter.xml -dir ./ -file descriptors_output.csv"
-    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    os.remove('molecule.smi')
+
+    # Read molecule.smi created earlier
+    df = pd.read_csv("molecule.smi", sep="\t", header=None)
+    df.columns = ["canonical_smiles", "molecule_chembl_id"]
+
+    fingerprint_list = []
+    name_list = []
+
+    for smi, name in zip(df["canonical_smiles"], df["molecule_chembl_id"]):
+        mol = Chem.MolFromSmiles(str(smi))
+
+        if mol is None:
+            fp = [0] * 881
+        else:
+            fp_vect = AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, nBits=881)
+            fp = list(fp_vect)
+
+        fingerprint_list.append(fp)
+        name_list.append(name)
+
+    # Create dataframe with PaDEL-like format
+    columns = [f"PubchemFP{i}" for i in range(881)]
+    df_fp = pd.DataFrame(fingerprint_list, columns=columns)
+    df_fp.insert(0, "Name", name_list)
+
+    # Save exactly as expected by later code
+    df_fp.to_csv("descriptors_output.csv", index=False)
+
+    # Optional cleanup (same as your old PaDEL version)
+    os.remove("molecule.smi")
 
 # File download
 def filedownload(df):
@@ -55,7 +84,7 @@ This app allows you to predict the bioactivity towards inhibting the `Acetylchol
 with st.sidebar.header('1. Upload your CSV data'):
     uploaded_file = st.sidebar.file_uploader("Upload your input file", type=['txt'])
     st.sidebar.markdown("""
-[Example input file](https://raw.githubusercontent.com/dataprofessor/bioactivity-prediction-app/main/example_acetylcholinesterase.txt)
+[Example input file](https://raw.githubusercontent.com/saamm/bioinformatics/main/example_acetylcholinesterase.txt)
 """)
 
 if st.sidebar.button('Predict'):
