@@ -1,6 +1,3 @@
-import rdkit
-st.write("RDKit version:", rdkit.__version__)
-
 import streamlit as st
 import pandas as pd
 from PIL import Image
