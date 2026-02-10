@@ -1,3 +1,4 @@
-import rdkit
-st.write("RDKit version:", rdkit.__version__)
+import sys
+import streamlit as st
 
+st.write("Python version:", sys.version)
