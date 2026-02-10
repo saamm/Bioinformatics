@@ -10,6 +10,9 @@ from rdkit.Chem import AllChem
 import pandas as pd
 import numpy as np
 
+import rdkit
+st.write("RDKit version:", rdkit.__version__)
+
 # Molecular descriptor calculator
 def desc_calc():
 
