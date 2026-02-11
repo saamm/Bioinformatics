@@ -4,13 +4,23 @@ from PIL import Image
 import subprocess
 import os
 import base64
+import requests
 import pickle
 from rdkit import Chem
 from rdkit.Chem import AllChem
 import pandas as pd
 import numpy as np
 
+MODEL_URL = "https://github.com/saamm/Bioinformatics/releases/download/Model/acetylcholinesterase_model.pkl"
+MODEL_PATH = "acetylcholinesterase_model.pkl"
 
+def load_model():
+    if not os.path.exists(MODEL_PATH):
+        st.info("Downloading model...")
+        r = requests.get(MODEL_URL)
+        with open(MODEL_PATH, "wb") as f:
+            f.write(r.content)
+    return pickle.load(open(MODEL_PATH, "rb"))
 
 # Molecular descriptor calculator
 def desc_calc():
@@ -55,9 +65,9 @@ def filedownload(df):
 # Model building
 def build_model(input_data):
     # Reads in saved regression model
-    load_model = pickle.load(open('acetylcholinesterase_model.pkl', 'rb'))
+    model = load_model()
     # Apply model to make predictions
-    prediction = load_model.predict(input_data)
+    prediction = model.predict(input_data)
     st.header('**Prediction output**')
     prediction_output = pd.Series(prediction, name='pIC50')
     molecule_name = pd.Series(load_data[1], name='molecule_name')
@@ -78,7 +88,6 @@ This app allows you to predict the bioactivity towards inhibting the `Acetylchol
 
 **Credits**
 - App built in `Python` + `Streamlit` 
-- Descriptor calculated using [PaDEL-Descriptor](http://www.yapcwsoft.com/dd/padeldescriptor/) [[Read the Paper]](https://doi.org/10.1002/jcc.21707).
 ---
 """)
 
