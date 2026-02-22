@@ -61,7 +61,7 @@ pip install -r requirements.txt
 1. For Educators / Learners <br>
 Explore notebooks to see workflows in action <br>
 Use example datasets to practice analysis <br>
- <br>
+<br>
 2. For Developers <br>
 Reuse model training functions <br>
 Integrate the app script into your own workflows <br>
@@ -69,7 +69,7 @@ Integrate the app script into your own workflows <br>
  3. For Researchers <br>
 Adapt bioactivity prediction pipelines <br>
 Add your own datasets and compare outcomes <br>
- <br>
+
 ## Acknowledgments <br>
 Made with passion for bioinformatics and open science <br>
 
